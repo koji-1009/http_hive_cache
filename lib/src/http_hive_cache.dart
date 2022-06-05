@@ -36,8 +36,8 @@ class HttpHiveCache {
 
     final key = url.toString();
     final cache = _box.get(key);
-    if (cache != null && !forceRefresh) {
-      if (now.isBefore(cache.until)) {
+    if (cache != null) {
+      if (now.isBefore(cache.until) && !forceRefresh) {
         return http.Response.bytes(
           cache.body,
           cache.statusCode,
