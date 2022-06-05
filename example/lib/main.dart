@@ -45,7 +45,7 @@ class MyHomePage extends HookWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Center(
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
