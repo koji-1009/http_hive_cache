@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_hive_cache/src/adapter.dart';
 import 'package:http_hive_cache/src/hive_helper.dart';
 import 'package:http_hive_cache/src/http_cache.dart';
 
@@ -8,6 +9,9 @@ class HttpHiveCache {
     String subDir = 'http_cache',
   }) async {
     await HiveHelper.initFlutter(subDir: subDir);
+    Hive
+      ..registerAdapter(HttpCacheAdapter())
+      ..registerAdapter(DateTimeAdapter());
 
     await open();
   }

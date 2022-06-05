@@ -11,7 +11,9 @@ class HiveHelper {
     required String subDir,
   }) async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      return;
+    }
 
     var cacheDir = await getTemporaryDirectory();
     Hive.init(path_helper.join(cacheDir.path, subDir));
