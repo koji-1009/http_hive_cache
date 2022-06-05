@@ -44,7 +44,7 @@ class HttpHiveCache {
           headers: cache.headers,
         );
       } else {
-        await _box.delete(key);
+        await clear(url: url);
       }
     }
 
