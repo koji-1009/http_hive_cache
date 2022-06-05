@@ -1,3 +1,3 @@
 library http_hive_cache;
 
-export 'src/http.dart';
+export 'src/http_hive_cache.dart';
