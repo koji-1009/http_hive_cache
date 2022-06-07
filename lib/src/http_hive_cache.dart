@@ -5,7 +5,7 @@ import 'package:http_hive_cache/src/hive_helper.dart';
 import 'package:http_hive_cache/src/http_cache.dart';
 
 enum CacheStrategy {
-  noCache,
+  none,
   client,
   server,
 }
@@ -39,7 +39,7 @@ class HttpHiveCache {
     Duration custom = const Duration(days: 365),
     bool forceRefresh = false,
   }) async {
-    if (strategy == CacheStrategy.noCache) {
+    if (strategy == CacheStrategy.none) {
       return await http.get(
         url,
         headers: headers,
@@ -69,7 +69,7 @@ class HttpHiveCache {
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       switch (strategy) {
-        case CacheStrategy.noCache:
+        case CacheStrategy.none:
           throw Exception();
         case CacheStrategy.client:
           final cache = HttpCache(
