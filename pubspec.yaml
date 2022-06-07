@@ -1,5 +1,5 @@
 name: http_hive_cache
-description: A new Flutter package project.
+description: The response can be cached during HTTP GET.
 version: 0.0.1
 homepage: https://github.com/koji-1009/http_hive_cache
 
