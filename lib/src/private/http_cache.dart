@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart'
+    show HiveType, HiveField, TypeAdapter, BinaryReader, BinaryWriter;
 
 part 'http_cache.g.dart';
 

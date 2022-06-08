@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart' show Hive, Box;
 import 'package:http/http.dart' as http;
 import 'package:http_hive_cache/src/cache_strategy.dart';
 import 'package:http_hive_cache/src/private/adapter.dart';
