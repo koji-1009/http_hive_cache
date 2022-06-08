@@ -14,6 +14,21 @@ class HttpCache {
     required this.until,
   });
 
+  factory HttpCache.url({
+    required Uri url,
+    required int statusCode,
+    required Uint8List body,
+    required Map<String, String> headers,
+    required DateTime until,
+  }) =>
+      HttpCache(
+        url: url.toString(),
+        statusCode: statusCode,
+        body: body,
+        headers: headers,
+        until: until,
+      );
+
   @HiveField(0)
   final String url;
   @HiveField(1)
