@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart' show TypeAdapter, BinaryReader, BinaryWriter;
 
 /// see [https://github.com/hivedb/hive/issues/977]
 /// Adapter for DateTime
