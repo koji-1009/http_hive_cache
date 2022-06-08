@@ -5,9 +5,11 @@ import 'package:http_hive_cache/src/private/adapter.dart';
 import 'package:http_hive_cache/src/private/hive_helper.dart';
 import 'package:http_hive_cache/src/private/http_cache.dart';
 
+/// Manage HTTP GET requests and cache
 class HttpHiveCache {
   static late Box<HttpCache> _box;
 
+  /// Initialize
   static Future<void> init({
     String subDir = 'http_cache',
   }) async {
@@ -19,24 +21,32 @@ class HttpHiveCache {
     await open();
   }
 
+  /// Open Hive box. See [close].
   static Future<void> open() async {
     _box = await Hive.openBox<HttpCache>('HttpHiveCache');
   }
 
+  /// Close Hive box. See [open].
   static Future<void> close() async {
     await _box.close();
   }
 
+  /// Delete cache specified by [url].
   static Future<void> clear({
     required Uri url,
   }) async {
     await _box.delete(url.hashCode);
   }
 
+  /// Delete all cache.
   static Future<void> clearAll() async {
     await _box.clear();
   }
 
+  /// Make an HTTP GET request.
+  ///
+  /// Handle cache in the way configured in [strategy].
+  /// Want to be sure to refresh the cache, set the [forceRefresh] flag to true.
   static Future<http.Response> get(
     Uri url, {
     Map<String, String>? headers,
