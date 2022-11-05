@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:hive/hive.dart'
-    show HiveType, HiveField, TypeAdapter, BinaryReader, BinaryWriter;
+import 'package:hive/hive.dart';
 
 part 'http_cache.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 201)
 class HttpCache {
   HttpCache({
     required this.url,
