@@ -11,7 +11,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +19,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
         colorSchemeSeed: Colors.blue,
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
         brightness: Brightness.dark,
+        colorSchemeSeed: Colors.blue,
       ),
       home: const MyHomePage(),
     );
@@ -43,9 +44,10 @@ class MyHomePage extends HookWidget {
       appBar: AppBar(
         title: const Text('HttpHiveCache example'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -63,6 +65,9 @@ class MyHomePage extends HookWidget {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 16,
+              ),
               TextButton(
                 onPressed: () async {
                   final url = urlController.text;
@@ -75,6 +80,9 @@ class MyHomePage extends HookWidget {
                   result.value = body.toString();
                 },
                 child: const Text('Search'),
+              ),
+              const SizedBox(
+                height: 16,
               ),
               Text('Result: ${result.value}'),
             ],
