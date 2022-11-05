@@ -25,9 +25,9 @@ mixin _$CacheStrategy {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? none,
-    TResult Function(Duration cacheControl)? client,
-    TResult Function()? server,
+    TResult? Function()? none,
+    TResult? Function(Duration cacheControl)? client,
+    TResult? Function()? server,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -47,9 +47,9 @@ mixin _$CacheStrategy {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_CacheStrategyNone value)? none,
-    TResult Function(_CacheStrategyClient value)? client,
-    TResult Function(_CacheStrategyServer value)? server,
+    TResult? Function(_CacheStrategyNone value)? none,
+    TResult? Function(_CacheStrategyClient value)? client,
+    TResult? Function(_CacheStrategyServer value)? server,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -66,17 +66,18 @@ mixin _$CacheStrategy {
 abstract class $CacheStrategyCopyWith<$Res> {
   factory $CacheStrategyCopyWith(
           CacheStrategy value, $Res Function(CacheStrategy) then) =
-      _$CacheStrategyCopyWithImpl<$Res>;
+      _$CacheStrategyCopyWithImpl<$Res, CacheStrategy>;
 }
 
 /// @nodoc
-class _$CacheStrategyCopyWithImpl<$Res>
+class _$CacheStrategyCopyWithImpl<$Res, $Val extends CacheStrategy>
     implements $CacheStrategyCopyWith<$Res> {
   _$CacheStrategyCopyWithImpl(this._value, this._then);
 
-  final CacheStrategy _value;
   // ignore: unused_field
-  final $Res Function(CacheStrategy) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -88,14 +89,11 @@ abstract class _$$_CacheStrategyNoneCopyWith<$Res> {
 
 /// @nodoc
 class __$$_CacheStrategyNoneCopyWithImpl<$Res>
-    extends _$CacheStrategyCopyWithImpl<$Res>
+    extends _$CacheStrategyCopyWithImpl<$Res, _$_CacheStrategyNone>
     implements _$$_CacheStrategyNoneCopyWith<$Res> {
   __$$_CacheStrategyNoneCopyWithImpl(
       _$_CacheStrategyNone _value, $Res Function(_$_CacheStrategyNone) _then)
-      : super(_value, (v) => _then(v as _$_CacheStrategyNone));
-
-  @override
-  _$_CacheStrategyNone get _value => super._value as _$_CacheStrategyNone;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -138,9 +136,9 @@ class _$_CacheStrategyNone
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? none,
-    TResult Function(Duration cacheControl)? client,
-    TResult Function()? server,
+    TResult? Function()? none,
+    TResult? Function(Duration cacheControl)? client,
+    TResult? Function()? server,
   }) {
     return none?.call();
   }
@@ -172,9 +170,9 @@ class _$_CacheStrategyNone
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_CacheStrategyNone value)? none,
-    TResult Function(_CacheStrategyClient value)? client,
-    TResult Function(_CacheStrategyServer value)? server,
+    TResult? Function(_CacheStrategyNone value)? none,
+    TResult? Function(_CacheStrategyClient value)? client,
+    TResult? Function(_CacheStrategyServer value)? server,
   }) {
     return none?.call(this);
   }
@@ -203,26 +201,25 @@ abstract class _$$_CacheStrategyClientCopyWith<$Res> {
   factory _$$_CacheStrategyClientCopyWith(_$_CacheStrategyClient value,
           $Res Function(_$_CacheStrategyClient) then) =
       __$$_CacheStrategyClientCopyWithImpl<$Res>;
+  @useResult
   $Res call({Duration cacheControl});
 }
 
 /// @nodoc
 class __$$_CacheStrategyClientCopyWithImpl<$Res>
-    extends _$CacheStrategyCopyWithImpl<$Res>
+    extends _$CacheStrategyCopyWithImpl<$Res, _$_CacheStrategyClient>
     implements _$$_CacheStrategyClientCopyWith<$Res> {
   __$$_CacheStrategyClientCopyWithImpl(_$_CacheStrategyClient _value,
       $Res Function(_$_CacheStrategyClient) _then)
-      : super(_value, (v) => _then(v as _$_CacheStrategyClient));
+      : super(_value, _then);
 
-  @override
-  _$_CacheStrategyClient get _value => super._value as _$_CacheStrategyClient;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? cacheControl = freezed,
+    Object? cacheControl = null,
   }) {
     return _then(_$_CacheStrategyClient(
-      cacheControl: cacheControl == freezed
+      cacheControl: null == cacheControl
           ? _value.cacheControl
           : cacheControl // ignore: cast_nullable_to_non_nullable
               as Duration,
@@ -259,16 +256,16 @@ class _$_CacheStrategyClient
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_CacheStrategyClient &&
-            const DeepCollectionEquality()
-                .equals(other.cacheControl, cacheControl));
+            (identical(other.cacheControl, cacheControl) ||
+                other.cacheControl == cacheControl));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(cacheControl));
+  int get hashCode => Object.hash(runtimeType, cacheControl);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_CacheStrategyClientCopyWith<_$_CacheStrategyClient> get copyWith =>
       __$$_CacheStrategyClientCopyWithImpl<_$_CacheStrategyClient>(
           this, _$identity);
@@ -286,9 +283,9 @@ class _$_CacheStrategyClient
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? none,
-    TResult Function(Duration cacheControl)? client,
-    TResult Function()? server,
+    TResult? Function()? none,
+    TResult? Function(Duration cacheControl)? client,
+    TResult? Function()? server,
   }) {
     return client?.call(cacheControl);
   }
@@ -320,9 +317,9 @@ class _$_CacheStrategyClient
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_CacheStrategyNone value)? none,
-    TResult Function(_CacheStrategyClient value)? client,
-    TResult Function(_CacheStrategyServer value)? server,
+    TResult? Function(_CacheStrategyNone value)? none,
+    TResult? Function(_CacheStrategyClient value)? client,
+    TResult? Function(_CacheStrategyServer value)? server,
   }) {
     return client?.call(this);
   }
@@ -346,7 +343,7 @@ abstract class _CacheStrategyClient implements CacheStrategy {
   const factory _CacheStrategyClient({final Duration cacheControl}) =
       _$_CacheStrategyClient;
 
-  Duration get cacheControl => throw _privateConstructorUsedError;
+  Duration get cacheControl;
   @JsonKey(ignore: true)
   _$$_CacheStrategyClientCopyWith<_$_CacheStrategyClient> get copyWith =>
       throw _privateConstructorUsedError;
@@ -361,14 +358,11 @@ abstract class _$$_CacheStrategyServerCopyWith<$Res> {
 
 /// @nodoc
 class __$$_CacheStrategyServerCopyWithImpl<$Res>
-    extends _$CacheStrategyCopyWithImpl<$Res>
+    extends _$CacheStrategyCopyWithImpl<$Res, _$_CacheStrategyServer>
     implements _$$_CacheStrategyServerCopyWith<$Res> {
   __$$_CacheStrategyServerCopyWithImpl(_$_CacheStrategyServer _value,
       $Res Function(_$_CacheStrategyServer) _then)
-      : super(_value, (v) => _then(v as _$_CacheStrategyServer));
-
-  @override
-  _$_CacheStrategyServer get _value => super._value as _$_CacheStrategyServer;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -411,9 +405,9 @@ class _$_CacheStrategyServer
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? none,
-    TResult Function(Duration cacheControl)? client,
-    TResult Function()? server,
+    TResult? Function()? none,
+    TResult? Function(Duration cacheControl)? client,
+    TResult? Function()? server,
   }) {
     return server?.call();
   }
@@ -445,9 +439,9 @@ class _$_CacheStrategyServer
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_CacheStrategyNone value)? none,
-    TResult Function(_CacheStrategyClient value)? client,
-    TResult Function(_CacheStrategyServer value)? server,
+    TResult? Function(_CacheStrategyNone value)? none,
+    TResult? Function(_CacheStrategyClient value)? client,
+    TResult? Function(_CacheStrategyServer value)? server,
   }) {
     return server?.call(this);
   }
