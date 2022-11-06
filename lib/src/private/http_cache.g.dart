@@ -8,7 +8,7 @@ part of 'http_cache.dart';
 
 class HttpCacheAdapter extends TypeAdapter<HttpCache> {
   @override
-  final int typeId = 1;
+  final int typeId = 201;
 
   @override
   HttpCache read(BinaryReader reader) {
