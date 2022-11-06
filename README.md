@@ -17,11 +17,6 @@ The response can be cached during HTTP GET.
 
 Three patterns are supported: no cache, response headers, and client specification.
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
 ## Usage
 
 ```dart
