@@ -1,6 +1,10 @@
+## 0.0.3
+
+* Change type_id.
+
 ## 0.0.2
 
-* Update
+* Update.
 
 ## 0.0.1
 
