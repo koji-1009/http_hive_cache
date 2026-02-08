@@ -3,11 +3,24 @@ import 'package:http_hive_cache/src/http/http.dart';
 import 'package:http_hive_cache/src/internal.dart';
 import 'package:http_hive_cache/src/types.dart';
 
+/// A cache manager for HTTP requests using Hive.
 class HttpHiveCache {
   static late LazyBox<HttpCache> _box;
   static late String _prefix;
+
+  /// The client used to make HTTP requests.
+  ///
+  /// Defaults to a standard HTTP client that returns a [HttpHiveResponse].
   static HttpHiveClient client = performGet;
 
+  /// Initializes the cache system.
+  ///
+  /// [boxName] is the name of the Hive box to use. Defaults to 'http_hive_cache'.
+  /// [path] is the directory where the Hive box should be stored.
+  /// [prefix] is the prefix used for cache keys. Defaults to 'http_hive_cache.'.
+  /// [typeId] is the Hive type ID for [HttpCache]. Defaults to 201.
+  ///
+  /// This must be called before any other methods.
   static Future<void> open({
     String? boxName,
     String? path,
@@ -31,14 +44,17 @@ class HttpHiveCache {
     );
   }
 
+  /// Closes the cache box.
   static Future<void> close() async {
     await _box.close();
   }
 
+  /// Deletes the cache for a specific [url].
   static Future<void> delete({required Uri url}) async {
     await _box.delete(_key(url));
   }
 
+  /// Deletes all cached responses.
   static Future<void> deleteAll() async {
     final keys = _box.keys.where((k) => k.toString().startsWith(_prefix));
     await _box.deleteAll(keys);
@@ -46,6 +62,12 @@ class HttpHiveCache {
 
   static String _key(Uri url) => '$_prefix$url';
 
+  /// Fetches a response from the cache or the network.
+  ///
+  /// [url] is the URI to fetch.
+  /// [headers] are the HTTP headers to send with the request.
+  /// [strategy] determines how the cache is used. Defaults to [CacheStrategy.client].
+  /// [forceRefresh] if true, forces a network request even if a valid cache exists.
   static Future<HttpHiveResponse> get(
     Uri url, {
     Map<String, String>? headers,

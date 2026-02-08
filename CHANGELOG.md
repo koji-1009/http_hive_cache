@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Added API documentation for `HttpHiveCache`, `CacheStrategy`, `HttpHiveResponse`, and related classes.
+
 ## 1.0.0
 
 * **Breaking Change**: Migrated from `hive` to `hive_ce` (Community Edition) v2.

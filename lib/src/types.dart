@@ -1,17 +1,24 @@
 import 'package:flutter/foundation.dart';
 
 /// Cache strategy
+/// strategies for caching.
 sealed class CacheStrategy {
   const CacheStrategy();
 
+  /// Default strategy: [CacheStrategyNone].
   const factory CacheStrategy.none() = CacheStrategyNone;
 
+  /// Cache strategy that respects client-side cache control.
   const factory CacheStrategy.client({Duration cacheControl}) =
       CacheStrategyClient;
 
+  /// Cache strategy that respects server-side cache control headers.
   const factory CacheStrategy.server() = CacheStrategyServer;
 }
 
+/// No caching strategy.
+///
+/// Requests will always be fetched from the network.
 @immutable
 class CacheStrategyNone extends CacheStrategy {
   const CacheStrategyNone();
@@ -25,10 +32,14 @@ class CacheStrategyNone extends CacheStrategy {
   int get hashCode => runtimeType.hashCode;
 }
 
+/// Client-side caching strategy.
+///
+/// Uses a fixed [cacheControl] duration to determine cache validity.
 @immutable
 class CacheStrategyClient extends CacheStrategy {
   const CacheStrategyClient({this.cacheControl = const Duration(hours: 1)});
 
+  /// The duration for which the response should be cached.
   final Duration cacheControl;
 
   @override
@@ -42,6 +53,9 @@ class CacheStrategyClient extends CacheStrategy {
   int get hashCode => cacheControl.hashCode;
 }
 
+/// Server-side caching strategy.
+///
+/// Respects `Cache-Control` headers (e.g., `max-age`, `s-maxage`) sent by the server.
 @immutable
 class CacheStrategyServer extends CacheStrategy {
   const CacheStrategyServer();
@@ -55,6 +69,7 @@ class CacheStrategyServer extends CacheStrategy {
   int get hashCode => runtimeType.hashCode;
 }
 
+/// A response object stored in Hive.
 @immutable
 class HttpHiveResponse {
   const HttpHiveResponse({
@@ -63,8 +78,13 @@ class HttpHiveResponse {
     required this.headers,
   });
 
+  /// The HTTP status code.
   final int statusCode;
+
+  /// The response body bytes.
   final Uint8List bodyBytes;
+
+  /// The response headers.
   final Map<String, String> headers;
 
   @override
@@ -94,5 +114,6 @@ class HttpHiveResponse {
   );
 }
 
+/// A client function for making HTTP requests.
 typedef HttpHiveClient =
     Future<HttpHiveResponse> Function(Uri url, {Map<String, String>? headers});
