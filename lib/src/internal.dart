@@ -1,14 +1,42 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+import 'dart:typed_data';
 
-part of 'http_cache.dart';
+import 'package:hive_ce/hive.dart';
 
-// **************************************************************************
-// TypeAdapterGenerator
-// **************************************************************************
+class HttpCache {
+  const HttpCache({
+    required this.url,
+    required this.statusCode,
+    required this.body,
+    required this.headers,
+    required this.until,
+  });
+
+  factory HttpCache.url({
+    required Uri url,
+    required int statusCode,
+    required Uint8List body,
+    required Map<String, String> headers,
+    required DateTime until,
+  }) => HttpCache(
+    url: url.toString(),
+    statusCode: statusCode,
+    body: body,
+    headers: headers,
+    until: until,
+  );
+
+  final String url;
+  final int statusCode;
+  final Uint8List body;
+  final Map<String, String> headers;
+  final DateTime until;
+}
 
 class HttpCacheAdapter extends TypeAdapter<HttpCache> {
+  const HttpCacheAdapter({required this.typeId});
+
   @override
-  final int typeId = 201;
+  final int typeId;
 
   @override
   HttpCache read(BinaryReader reader) {

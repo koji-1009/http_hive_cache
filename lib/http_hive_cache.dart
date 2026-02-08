@@ -1,4 +1,4 @@
-library http_hive_cache;
+library;
 
-export 'src/cache_strategy.dart';
 export 'src/http_hive_cache.dart';
+export 'src/types.dart';
