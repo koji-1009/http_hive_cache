@@ -1,5 +1,9 @@
 # http_hive_cache
 
+[![pub package](https://img.shields.io/pub/v/http_hive_cache.svg)](https://pub.dev/packages/http_hive_cache)
+[![analyze](https://github.com/koji-1009/http_hive_cache/actions/workflows/analyze.yaml/badge.svg)](https://github.com/koji-1009/http_hive_cache/actions/workflows/analyze.yaml)
+[![codecov](https://codecov.io/gh/koji-1009/http_hive_cache/branch/main/graph/badge.svg)](https://codecov.io/gh/koji-1009/http_hive_cache)
+
 A lightweight, efficient HTTP cache library for Flutter and Dart, powered by **Hive CE** (Community Edition).
 
 It caches HTTP GET responses in a local Hive box, supporting standard `Cache-Control` headers, custom TTL, and offline-first strategies.
