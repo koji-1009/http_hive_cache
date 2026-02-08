@@ -1,11 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:http_hive_cache/http_hive_cache.dart';
+import 'package:path_provider/path_provider.dart';
 
-Future<void> main() async {
-  await HttpHiveCache.init();
+void main() async {
+  await Hive.initFlutter();
+  final String? cacheDir;
+  if (kIsWeb) {
+    cacheDir = null;
+  } else {
+    cacheDir = (await getApplicationCacheDirectory()).path;
+  }
+  await HttpHiveCache.open(path: cacheDir);
 
   runApp(const MyApp());
 }
@@ -18,12 +27,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        useMaterial3: true,
         brightness: Brightness.light,
         colorSchemeSeed: Colors.blue,
       ),
       darkTheme: ThemeData(
-        useMaterial3: true,
         brightness: Brightness.dark,
         colorSchemeSeed: Colors.blue,
       ),
@@ -32,61 +39,67 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends HookWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final urlController = useTextEditingController();
-    final result = useState('no response');
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
+class _MyHomePageState extends State<MyHomePage> {
+  final _urlController = TextEditingController(text: 'https://httpbin.org/get');
+  String _result = 'no response';
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _search() async {
+    final url = _urlController.text;
+    if (url.isEmpty) return;
+
+    try {
+      final response = await HttpHiveCache.get(Uri.parse(url));
+
+      // expect JSON style
+      final bodyString = utf8.decode(response.bodyBytes);
+      // simple pretty print or just show string
+      setState(() {
+        _result = bodyString;
+      });
+    } catch (e) {
+      setState(() {
+        _result = 'Error: $e';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('HttpHiveCache example'),
-      ),
+      appBar: AppBar(title: const Text('HttpHiveCache example')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 600,
-                ),
-                child: TextField(
-                  controller: urlController,
-                  keyboardType: TextInputType.url,
-                  textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    hintText: 'URL',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
+          children: [
+            TextField(
+              controller: _urlController,
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(
+                hintText: 'URL',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(
-                height: 16,
-              ),
-              TextButton(
-                onPressed: () async {
-                  final url = urlController.text;
-                  final response = await HttpHiveCache.get(
-                    Uri.parse(url),
-                  );
-
-                  // expect JSON style
-                  final body = json.decode(response.body) as Map;
-                  result.value = body.toString();
-                },
-                child: const Text('Search'),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Text('Result: ${result.value}'),
-            ],
-          ),
+              onSubmitted: (_) => _search(),
+            ),
+            OutlinedButton(onPressed: _search, child: const Text('Search')),
+            SelectableText('Result: $_result'),
+          ],
         ),
       ),
     );
