@@ -1,196 +1,149 @@
-import 'package:hive/hive.dart' show Hive, Box;
-import 'package:http/http.dart' as http;
-import 'package:http_hive_cache/src/cache_strategy.dart';
-import 'package:http_hive_cache/src/private/adapter.dart';
-import 'package:http_hive_cache/src/private/hive_helper.dart';
-import 'package:http_hive_cache/src/private/http_cache.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:http_hive_cache/src/http/http.dart';
+import 'package:http_hive_cache/src/internal.dart';
+import 'package:http_hive_cache/src/types.dart';
 
-/// Manage HTTP GET requests and cache
 class HttpHiveCache {
-  static late Box<HttpCache> _box;
+  static late LazyBox<HttpCache> _box;
+  static late String _prefix;
+  static HttpHiveClient client = performGet;
 
-  /// Initialize
-  static Future<void> init({
-    String subDir = 'http_cache',
+  static Future<void> open({
+    String? boxName,
+    String? path,
+    String prefix = 'http_hive_cache.',
+    int typeId = 201,
   }) async {
-    await HiveHelper.initFlutter(subDir: subDir);
-    Hive
-      ..registerAdapter(HttpCacheAdapter())
-      ..registerAdapter(DateTimeAdapter());
-
-    await open();
+    _prefix = prefix;
+    if (!Hive.isAdapterRegistered(typeId)) {
+      Hive.registerAdapter(HttpCacheAdapter(typeId: typeId));
+    } else {
+      // In debug mode (Hot Restart), we need to override the adapter
+      // because the class identity might have changed.
+      assert(() {
+        Hive.registerAdapter(HttpCacheAdapter(typeId: typeId), override: true);
+        return true;
+      }());
+    }
+    _box = await Hive.openLazyBox<HttpCache>(
+      boxName ?? 'http_hive_cache',
+      path: path,
+    );
   }
 
-  /// Open Hive box. See [close].
-  static Future<void> open() async {
-    _box = await Hive.openBox<HttpCache>('HttpHiveCache');
-  }
-
-  /// Close Hive box. See [open].
   static Future<void> close() async {
     await _box.close();
   }
 
-  /// Delete cache specified by [url].
-  static Future<void> clear({
-    required Uri url,
-  }) async {
-    await _box.delete(url.hashCode);
+  static Future<void> delete({required Uri url}) async {
+    await _box.delete(_key(url));
   }
 
-  /// Delete all cache.
-  static Future<void> clearAll() async {
-    await _box.clear();
+  static Future<void> deleteAll() async {
+    final keys = _box.keys.where((k) => k.toString().startsWith(_prefix));
+    await _box.deleteAll(keys);
   }
 
-  /// Make an HTTP GET request.
-  ///
-  /// Handle cache in the way configured in [strategy].
-  /// Want to be sure to refresh the cache, set the [forceRefresh] flag to true.
-  static Future<http.Response> get(
+  static String _key(Uri url) => '$_prefix$url';
+
+  static Future<HttpHiveResponse> get(
     Uri url, {
     Map<String, String>? headers,
     CacheStrategy strategy = const CacheStrategy.client(),
     bool forceRefresh = false,
-  }) async =>
-      await strategy.when(
-        none: () async => await http.get(
-          url,
-          headers: headers,
-        ),
-        client: (cacheControl) async => await _getClient(
-          url: url,
-          headers: headers,
-          cacheControl: cacheControl,
-          forceRefresh: forceRefresh,
-        ),
-        server: () async => await _getServer(
-          url: url,
-          headers: headers,
-          forceRefresh: forceRefresh,
-        ),
-      );
+  }) async => await switch (strategy) {
+    CacheStrategyNone() => client(url, headers: headers),
+    CacheStrategyClient(:final cacheControl) => _request(
+      url: url,
+      headers: headers,
+      cacheControl: cacheControl,
+      forceRefresh: forceRefresh,
+    ),
+    CacheStrategyServer() => _request(
+      url: url,
+      headers: headers,
+      forceRefresh: forceRefresh,
+      checkServerHeaders: true,
+    ),
+  };
 
-  static Future<http.Response> _getClient({
+  static Future<HttpHiveResponse> _request({
     required Uri url,
     required Map<String, String>? headers,
-    required Duration cacheControl,
+    Duration? cacheControl,
     required bool forceRefresh,
+    bool checkServerHeaders = false,
   }) async {
     final now = DateTime.now();
+    final cache = await _findCache(url: url);
 
-    final cache = await _findCache(
-      url: url,
-    );
     if (cache != null) {
       if (now.isBefore(cache.until) && !forceRefresh) {
-        return http.Response.bytes(
-          cache.body,
-          cache.statusCode,
+        return HttpHiveResponse(
+          bodyBytes: cache.body,
+          statusCode: cache.statusCode,
           headers: cache.headers,
         );
       } else {
-        await clear(
-          url: url,
-        );
+        await delete(url: url);
       }
     }
 
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
+    final response = await client(url, headers: headers);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      await _saveCache(
-        url: url,
-        response: response,
-        until: now.add(cacheControl),
-      );
-    }
+      DateTime? until;
 
-    return response;
-  }
+      if (checkServerHeaders) {
+        final serverCacheControl = response.headers.map(
+          (key, value) => MapEntry(key.toLowerCase(), value),
+        )['cache-control'];
 
-  static Future<http.Response> _getServer({
-    required Uri url,
-    required Map<String, String>? headers,
-    required bool forceRefresh,
-  }) async {
-    final now = DateTime.now();
+        if (serverCacheControl != null) {
+          final param = serverCacheControl
+              .split(',')
+              .map((e) => e.trim().toLowerCase())
+              .firstWhere(
+                (e) => e.contains('max-age') || e.contains('s-maxage'),
+                orElse: () => '',
+              );
 
-    final cache = await _findCache(
-      url: url,
-    );
-    if (cache != null) {
-      if (now.isBefore(cache.until) && !forceRefresh) {
-        return http.Response.bytes(
-          cache.body,
-          cache.statusCode,
-          headers: cache.headers,
-        );
-      } else {
-        await clear(
-          url: url,
-        );
-      }
-    }
-
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
-
-    final cacheControl = response.headers.map(
-        (key, value) => MapEntry(key.toLowerCase(), value))['cache-control'];
-    if (cacheControl != null) {
-      final param = cacheControl
-          .split(',')
-          .map((element) => element.trim().toLowerCase())
-          .firstWhere(
-            (element) =>
-                element.contains('max-age') || element.contains('s-maxage'),
-            orElse: () => '',
-          );
-      if (param.isNotEmpty) {
-        final age = param.split('=');
-        final cacheSeconds = int.tryParse(age[1]) ?? 0;
-
-        if (cacheSeconds > 0) {
-          await _saveCache(
-            url: url,
-            response: response,
-            until: now.add(
-              Duration(
-                seconds: cacheSeconds,
-              ),
-            ),
-          );
+          if (param.isNotEmpty) {
+            final age = param.split('=');
+            final cacheSeconds =
+                int.tryParse(age.length > 1 ? age[1] : '') ?? 0;
+            if (cacheSeconds > 0) {
+              until = now.add(Duration(seconds: cacheSeconds));
+            }
+          }
         }
+      } else if (cacheControl != null) {
+        until = now.add(cacheControl);
+      }
+
+      if (until != null) {
+        await _saveCache(url: url, response: response, until: until);
       }
     }
 
     return response;
   }
 
-  static Future<HttpCache?> _findCache({
-    required Uri url,
-  }) async =>
-      _box.get(url.hashCode);
+  static Future<HttpCache?> _findCache({required Uri url}) async =>
+      _box.get(_key(url));
 
   static Future<void> _saveCache({
     required Uri url,
-    required http.Response response,
+    required HttpHiveResponse response,
     required DateTime until,
-  }) async =>
-      _box.put(
-        url.hashCode,
-        HttpCache.url(
-          url: url,
-          statusCode: response.statusCode,
-          body: response.bodyBytes,
-          headers: response.headers,
-          until: until,
-        ),
-      );
+  }) async => _box.put(
+    _key(url),
+    HttpCache.url(
+      url: url,
+      statusCode: response.statusCode,
+      body: response.bodyBytes,
+      headers: response.headers,
+      until: until,
+    ),
+  );
 }

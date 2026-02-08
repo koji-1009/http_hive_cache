@@ -1,30 +1,20 @@
 name: http_hive_cache
 description: Simplified caching of HTTP GET requests. Hive is used for data storage.
-version: 0.0.4
+version: 1.0.0
 homepage: https://github.com/koji-1009/http_hive_cache
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
-  http: ^1.0.0
-  hive: ^2.0.0
-
-  path: ^1.0.0
-  path_provider: ^2.0.0
-  freezed_annotation: ^2.0.0
+  web: ^1.0.0
+  hive_ce: ^2.19.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-
-  hive_generator: ^2.0.0
-  build_runner: ^2.0.0
-  freezed: ^2.0.0
-
-flutter:
+  flutter_lints: ^6.0.0
+  dapper: ^1.4.0
