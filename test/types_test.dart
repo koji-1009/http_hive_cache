@@ -61,14 +61,14 @@ void main() {
         url: 'a',
         statusCode: 200,
         body: Uint8List.fromList([1]),
-        headers: {},
+        headers: const {},
         until: now,
       );
       final c2 = HttpCache(
         url: 'a',
         statusCode: 200,
         body: Uint8List.fromList([1]),
-        headers: {},
+        headers: const {},
         until: now,
       );
 

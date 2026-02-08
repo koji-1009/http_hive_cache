@@ -1,7 +1,7 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive.dart';
 
+@immutable
 class HttpCache {
   const HttpCache({
     required this.url,
@@ -30,6 +30,28 @@ class HttpCache {
   final Uint8List body;
   final Map<String, String> headers;
   final DateTime until;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is HttpCache &&
+        other.url == url &&
+        other.statusCode == statusCode &&
+        listEquals(other.body, body) &&
+        mapEquals(other.headers, headers) &&
+        other.until == until;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    url,
+    statusCode,
+    Object.hashAll(body),
+    Object.hashAllUnordered(
+      headers.entries.map((e) => Object.hash(e.key, e.value)),
+    ),
+    until,
+  );
 }
 
 class HttpCacheAdapter extends TypeAdapter<HttpCache> {
