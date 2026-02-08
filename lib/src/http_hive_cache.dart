@@ -17,6 +17,13 @@ class HttpHiveCache {
     _prefix = prefix;
     if (!Hive.isAdapterRegistered(typeId)) {
       Hive.registerAdapter(HttpCacheAdapter(typeId: typeId));
+    } else {
+      // In debug mode (Hot Restart), we need to override the adapter
+      // because the class identity might have changed.
+      assert(() {
+        Hive.registerAdapter(HttpCacheAdapter(typeId: typeId), override: true);
+        return true;
+      }());
     }
     _box = await Hive.openLazyBox<HttpCache>(
       boxName ?? 'http_hive_cache',
