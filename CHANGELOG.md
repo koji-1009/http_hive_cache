@@ -1,3 +1,9 @@
+## 1.1.0
+
+* Raised the minimum SDK to Flutter 3.41.0 / Dart 3.11.0.
+  * The previous constraint was inconsistent: Flutter 3.29.0 ships Dart 3.7.0, which cannot satisfy `sdk: ">=3.8.0"`.
+* Regenerated the example app with Flutter 3.47.0.
+
 ## 1.0.1
 
 * Added API documentation for `HttpHiveCache`, `CacheStrategy`, `HttpHiveResponse`, and related classes.
