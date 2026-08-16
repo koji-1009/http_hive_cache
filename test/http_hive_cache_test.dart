@@ -219,7 +219,7 @@ void main() {
           url: 'other',
           statusCode: 200,
           body: Uint8List(0),
-          headers: {},
+          headers: const {},
           until: DateTime.now().add(const Duration(days: 1)),
         ),
       );
